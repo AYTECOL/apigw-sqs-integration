@@ -9,7 +9,16 @@ Globals:
     Tracing: Active
   Api:
     TracingEnabled: true
+Parameters:
+  AppEnv:
+    Type: String
+    Default: dev
 Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Sub "${AppEnv}"
+      OpenApiVersion: '2.0'
   DeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -67,12 +76,27 @@ Resources:
                   - logs:FilterLogEvents
                 Effect: Allow
                 Resource: "*"
+  SyncFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/api-sync/
+      Handler: app.handler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      Events:
+        PurchaseItem:
+          Type: Api
+          Properties:
+            Path: /v1/purchase/{proxy+}
+            Method: any
+            RestApiId: !Ref ApiGatewayApi
   SqsFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: functions/api-sqs/
+      CodeUri: functions/api-async/
       Handler: app.handler
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
       - x86_64
       Events:
@@ -112,6 +136,8 @@ Resources:
       ResourceId: !Ref ProxyResource
       HttpMethod: ANY
       AuthorizationType: NONE
+      MethodResponses:
+        - StatusCode: '200'
       Integration:
         Credentials: !GetAtt ApiGatewayToSqsRole.Arn
         IntegrationHttpMethod: ANY
@@ -130,8 +156,6 @@ Resources:
           "application/json": "Action=SendMessage&MessageBody=$input.body"
         IntegrationResponses:
           - StatusCode: "200"
-            ResponseTemplates:
-              application/json: '{"message": "request sent"}'
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -146,12 +170,6 @@ Resources:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
 Outputs:
-  # SqsApi:
-  #   Description: API Gateway endpoint URL for Prod stage for Hello World function
-  #   Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
   SqsFunction:
-    Description: Hello World Lambda Function ARN
+    Description: Async Lambda Function ARN
     Value: !GetAtt SqsFunction.Arn
-  # SqsFunctionIamRole:
-  #   Description: Implicit IAM Role created for Hello World function
-  #   Value: !GetAtt SqsFunctionIamRole.Arn

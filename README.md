@@ -1,3 +1,67 @@
+# Serverless Webinar Lab
+
+Future without servers. 
+
+## Description
+
+This project contains examples about event oriented architectures
+
+## Getting Started
+
+The API receives purchase requests from clients for a product, 
+the event is going to be processed in two ways: Sync and Async and each request is stored in a DynamoDB table 
+
+In the src folder you will find the code for each microservice: 
+
+* function_sqs: contains the code to react from an async invocation 
+* function: contains the code to react from a sync invocation 
+
+
+### Dependencies
+
+* [NodeJs]  
+* [AWS SAM] 
+* [Express]
+* [AWS SDK] 
+* [Docker]  
+
+### Installing
+
+* Go to the root directory 
+* Build the SAM project  
+```
+  sam build --use-container 
+```
+* Deploy the SAM project 
+```
+  sam deploy 
+```
+
+### Executing program
+
+When you have deployed the project in your account, import the POSTMAN collection
+Note: do not forget to update the API URL in your environment configuration 
+
+## Authors
+
+restebance  
+[@restebance](https://medium.com/@restebance)
+
+## Version History
+
+* 0.1
+    * Initial Release
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details
+
+## Acknowledgments
+
+* [Ayté](https://ayte.co)
+
+
+
 # api-gw-sqs
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
