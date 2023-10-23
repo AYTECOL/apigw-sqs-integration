@@ -82,13 +82,16 @@ Resources:
       CodeUri: functions/api-sync/
       Handler: app.handler
       Runtime: nodejs18.x
+      Environment:
+          Variables:
+              CORS_ORIGIN: "*"
       Architectures:
       - x86_64
       Events:
         PurchaseItem:
           Type: Api
           Properties:
-            Path: /v1/purchase/{proxy+}
+            Path: /sync/v1/purchase/{proxy+}
             Method: any
             RestApiId: !Ref ApiGatewayApi
   SqsFunction:
@@ -112,13 +115,29 @@ Resources:
     Properties:
       Name: "API Gateway to SQS"
       Description: "Sample API for sending messages via API Gateway directly to SQS"
-  ProxyResource:
+  TypeResource:
     Type: 'AWS::ApiGateway::Resource'
     Properties:
       RestApiId: !Ref ApiGw
       ParentId: !GetAtt
         - ApiGw
         - RootResourceId
+      PathPart: 'async'
+  VersionResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref ApiGw
+      ParentId: !GetAtt
+        - TypeResource
+        - ResourceId
+      PathPart: 'v1'
+  ProxyResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref ApiGw
+      ParentId: !GetAtt
+        - VersionResource
+        - ResourceId
       PathPart: '{proxy+}'
   OptionsMethod:
     Type: 'AWS::ApiGateway::Method'
