@@ -12,6 +12,8 @@
   "author": "restebance",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.435.0",
+    "@aws-sdk/lib-dynamodb": "^3.435.0",
     "@vendia/serverless-express": "^4.10.4",
     "cors": "^2.8.5",
     "express": "^4.18.2",

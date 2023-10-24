@@ -82,16 +82,20 @@ Resources:
       CodeUri: functions/api-sync/
       Handler: app.handler
       Runtime: nodejs18.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
       Environment:
-          Variables:
-              CORS_ORIGIN: "*"
+        Variables:
+          CORS_ORIGIN: "*"
+          USERS_DB_TABLE: !Ref UsersTable
       Architectures:
       - x86_64
       Events:
         PurchaseItem:
           Type: Api
           Properties:
-            Path: /sync/v1/purchase/{proxy+}
+            Path: /sync/v1/users/{proxy+}
             Method: any
             RestApiId: !Ref ApiGatewayApi
   SqsFunction:
@@ -100,8 +104,14 @@ Resources:
       CodeUri: functions/api-async/
       Handler: app.handler
       Runtime: nodejs18.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
       Architectures:
       - x86_64
+      Environment:
+        Variables:
+          USERS_DB_TABLE: !Ref UsersTable
       Events:
         ApiGwSQSEvent:
           Type: SQS
@@ -175,6 +185,23 @@ Resources:
           "application/json": "Action=SendMessage&MessageBody=$input.body"
         IntegrationResponses:
           - StatusCode: "200"
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Join
+        - '-'
+        - - my
+          - webinar
+          - users
+          - table
+          - !Ref AppEnv
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
