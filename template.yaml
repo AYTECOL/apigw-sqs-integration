@@ -85,10 +85,13 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PurchasesTable
       Environment:
         Variables:
           CORS_ORIGIN: "*"
           USERS_DB_TABLE: !Ref UsersTable
+          PURCHASES_DB_TABLE: !Ref PurchasesTable
       Architectures:
       - x86_64
       Events:
@@ -106,12 +109,12 @@ Resources:
       Runtime: nodejs18.x
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref UsersTable
+            TableName: !Ref PurchasesTable
       Architectures:
       - x86_64
       Environment:
         Variables:
-          USERS_DB_TABLE: !Ref UsersTable
+          PURCHASES_DB_TABLE: !Ref PurchasesTable
       Events:
         ApiGwSQSEvent:
           Type: SQS
@@ -198,18 +201,26 @@ Resources:
       AttributeDefinitions:
         - AttributeName: email
           AttributeType: S
-        - AttributeName: message_id
-          AttributeType: S
       KeySchema:
         - AttributeName: email
           KeyType: HASH
-      GlobalSecondaryIndexes:
-        - IndexName: message_index
-          KeySchema:
-              - AttributeName: message_id
-                KeyType: HASH
-          Projection:
-              ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+  PurchasesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Join
+        - '-'
+        - - my
+          - webinar
+          - purchases
+          - table
+          - !Ref AppEnv
+      AttributeDefinitions:
+        - AttributeName: message_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: message_id
+          KeyType: HASH
       BillingMode: PAY_PER_REQUEST
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group

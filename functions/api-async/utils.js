@@ -2,28 +2,29 @@
 const { DynamoDBClient} = require("@aws-sdk/client-dynamodb");
 const { PutCommand, DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
 
-const USERS_DB_TABLE = process.env.USERS_DB_TABLE;
+const PURCHASES_DB_TABLE = process.env.PURCHASES_DB_TABLE;
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
-const createUser = async (userParams, messageId) => {
+const createPurchase = async (purchaseParams, messageId) => {
     try {
-        const commandPutUser = new PutCommand({
-            TableName: USERS_DB_TABLE,
+        const commandPutPurchase = new PutCommand({
+            TableName: PURCHASES_DB_TABLE,
             Item: {
-                ...userParams,
-                'message_id': messageId
+                ...purchaseParams,
+                'message_id': messageId,
+                'status': 'success'
             }
         });
-        const response = await docClient.send(commandPutUser);
+        const response = await docClient.send(commandPutPurchase);
         console.info(response.Attributes);
         return response;
     } catch (error) {
-        process.stderr.write("Error createUser: ", error);
+        process.stderr.write("Error createPurchase: ", error);
         throw error;
     }
 };
 
 module.exports = {
-    createUser
+    createPurchase
 }
