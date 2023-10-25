@@ -1,0 +1,99 @@
+{
+	"info": {
+		"_postman_id": "c3d76dbe-5fb2-4363-824b-e8fc66e69b5c",
+		"name": "WebinarLab",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SyncInvocation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"email\": \"restebance@gmail.com\", \n        \"first_name\": \"Esteban\",\n        \"last_name\": \"Ceron\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sync_api_gw_host}}/dev/sync/v1/users/create",
+					"host": [
+						"{{sync_api_gw_host}}"
+					],
+					"path": [
+						"dev",
+						"sync",
+						"v1",
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AsyncInvocation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"email\": \"restebance@deelab.com\", \n        \"first_name\": \"Esteban\",\n        \"last_name\": \"Ceron\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{async_api_gw_host}}/dev/async/v1/user/create",
+					"host": [
+						"{{async_api_gw_host}}"
+					],
+					"path": [
+						"dev",
+						"async",
+						"v1",
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CheckAsyncProcess",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"message_id\": \"49a4bb8e-3ac1-499d-a1a7-cd5d0e9d3db8\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sync_api_gw_host}}/dev/sync/v1/users/check",
+					"host": [
+						"{{sync_api_gw_host}}"
+					],
+					"path": [
+						"dev",
+						"sync",
+						"v1",
+						"users",
+						"check"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
