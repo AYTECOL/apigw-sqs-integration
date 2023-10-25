@@ -98,7 +98,7 @@ Resources:
             Path: /sync/v1/users/{proxy+}
             Method: any
             RestApiId: !Ref ApiGatewayApi
-  SqsFunction:
+  AsyncFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: functions/api-async/
@@ -198,9 +198,18 @@ Resources:
       AttributeDefinitions:
         - AttributeName: email
           AttributeType: S
+        - AttributeName: message_id
+          AttributeType: S
       KeySchema:
         - AttributeName: email
           KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: message_index
+          KeySchema:
+              - AttributeName: message_id
+                KeyType: HASH
+          Projection:
+              ProjectionType: ALL
       BillingMode: PAY_PER_REQUEST
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -216,6 +225,9 @@ Resources:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
 Outputs:
-  SqsFunction:
+  AsyncFunction:
     Description: Async Lambda Function ARN
-    Value: !GetAtt SqsFunction.Arn
+    Value: !GetAtt AsyncFunction.Arn
+  SyncFunction:
+    Description: Sync Lambda Function ARN
+    Value: !GetAtt SyncFunction.Arn

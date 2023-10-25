@@ -10,5 +10,9 @@
     "async"
   ],
   "author": "restebance",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.435.0",
+    "@aws-sdk/lib-dynamodb": "^3.435.0"
+  }
 }
